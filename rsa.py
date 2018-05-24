@@ -18,18 +18,32 @@ def modular_multiplicative_inverse(a, modulus):
 
 class RSA:
 	def __init__(self, p, q, coprime_index):
+		"""
+		https://en.wikipedia.org/wiki/RSA_(cryptosystem)
+		"""
+		
+		# 1. Choose two distinct prime numbers p and q.
 		self.p = p
 		self.q = q
+		
+		# 2. Compute n = pq.
 		self.n = p*q
+		
+		# 3. Compute λ(n) = lcm(λ(p), λ(q)) = lcm(p − 1, q − 1)
 		self.t = least_common_multiple(self.p-1, self.q-1)
+		
+		# 4. Choose an integer e such that 1 < e < λ(n) and gcd(e, λ(n)) = 1
+		#    i.e., e and λ(n) are coprime.
 		self.e = coprimes_of(self.t)[coprime_index]
+		
+		# 5. Determine d as d ≡ e−1 (mod λ(n))
 		self.d = modular_multiplicative_inverse(self.e, self.t)
 
-	def encrypt(self, x):
-		return (x ** self.e) % self.n
+	def encrypt(self, message):
+		return (message ** self.e) % self.n
 
-	def decrypt(self, x):
-		return (x ** self.d) % self.n
+	def decrypt(self, cipher):
+		return (cipher ** self.d) % self.n
 
 	def test(self, original_message):
 		cipher = self.encrypt(original_message)
